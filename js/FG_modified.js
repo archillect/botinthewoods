@@ -20,7 +20,7 @@ function ForestGenerator(forestOptions, treeOptions) {
     var Colors = require('./Colors.js');
     var Randoms = require('./Randoms.js');
     var DeciduousTrees = require('./DeciduousTrees');
-    var ConiferousTrees = require('./ConiferousButLooksDeciduousHmmm');
+    var ConiferousTrees = require('./ConiferousTrees');
     //var Moon = require('./Moon');
     var Ferns = require('./Ferns.js');
     var SoftwareRenderer = require('three-software-renderer');
@@ -28,7 +28,7 @@ function ForestGenerator(forestOptions, treeOptions) {
 
     config = require(path.join(__dirname, '../config.js'));
 
-    var _c = new Colors();
+    var colorHelper = new Colors();
     var _r = new Randoms();
     
     var _ferns = new Ferns();
@@ -55,8 +55,8 @@ function ForestGenerator(forestOptions, treeOptions) {
 
     var SKY_COL, GROUND_COL, GROUND_COLS, VEG_COLS, STONE_COLS;
 
-    var _RIDGE_Z1 = 800;
-    var _RIDGE_Z2 = 900;
+    var _RIDGE_Z1 = 550;
+    var _RIDGE_Z2 = 700;
 
     _initColors();
 
@@ -141,8 +141,8 @@ function ForestGenerator(forestOptions, treeOptions) {
         var i;
 
         // The sky and ground are a pastel blue and a muddy green, randomly permuted
-        SKY_COL = NIGHT_MODE ? _c.variationsOn("#4d6876", 120) : _c.variationsOn("#bdeff1", 150);
-        GROUND_COL = NIGHT_MODE ? _c.variationsOn("#40523c", 80) : _c.brightenByAmt(_c.variationsOn("#78836e", 150),_r.randomInt(-25,-75));
+        SKY_COL = NIGHT_MODE ? colorHelper.variationsOn("#4d6876", 120) : colorHelper.variationsOn("#bdeff1", 150);
+        GROUND_COL = NIGHT_MODE ? colorHelper.variationsOn("#40523c", 80) : colorHelper.variationsOn("#78836e", 150);
         
         // There are leaves on the ground too.  They match the ground, which varies slightly.
         // And flowers!  Which could be any colour.
@@ -151,17 +151,17 @@ function ForestGenerator(forestOptions, treeOptions) {
         FLOWER_COLS = [];
         STONE_COLS = [];
 
-        var vegBase = NIGHT_MODE ? GROUND_COL : _c.brightenByAmt(GROUND_COL,_r.random(-30,10));
+        var vegBase = NIGHT_MODE ? GROUND_COL : colorHelper.brightenByAmt(GROUND_COL,_r.random(-30,10));
         
-        var stoneGrey = _c.greyHex(NIGHT_MODE?_r.randomInt(20,60):_r.randomInt(90,130));
-        var stoneBase = _c.mixHexCols(stoneGrey,GROUND_COL,0.7,0.3);
-        stoneBase = _c.mixHexCols(stoneBase,SKY_COL,0.8,0.2);
+        var stoneGrey = colorHelper.greyHex(NIGHT_MODE?_r.randomInt(20,60):_r.randomInt(90,130));
+        var stoneBase = colorHelper.mixHexCols(stoneGrey,GROUND_COL,0.7,0.3);
+        stoneBase = colorHelper.mixHexCols(stoneBase,SKY_COL,0.8,0.2);
         // just one colour for the path actually, it's too sparkly otherwise
         STONE_COLS[0] = stoneBase;
  
         for (i = 0; i < 8; i++){
-            GROUND_COLS.push(_c.variationsOn(GROUND_COL, 20));
-            VEG_COLS.push(_c.variationsOn(vegBase, 40));
+            GROUND_COLS.push(colorHelper.variationsOn(GROUND_COL, 20));
+            VEG_COLS.push(colorHelper.variationsOn(vegBase, 40));
         }
     }
 
@@ -181,7 +181,7 @@ function ForestGenerator(forestOptions, treeOptions) {
 
         // If we didn't need all 256 colors, fine, just fill up the rest so the GIFmaker doesn't break.
         while (pal.length < 256) {
-            pal.push(_c.parseHex(_c.variationsOn(GROUND_COL),15));
+            pal.push(colorHelper.parseHex(colorHelper.variationsOn(GROUND_COL),15));
         }
 
         return pal;
@@ -262,8 +262,8 @@ function ForestGenerator(forestOptions, treeOptions) {
 
             /*
             if(_rainbow && i%5==0){
-                SKY_COL = _c.randomHex();
-                GRND_COL = _c.randomHex();
+                SKY_COL = colorHelper.randomHex();
+                GRND_COL = colorHelper.randomHex();
             }
             */
 
@@ -322,12 +322,12 @@ function ForestGenerator(forestOptions, treeOptions) {
         var bgBuffer = [];
 
         // We're going to add some stripes for a very primitive gradient where the sky meets the ground.
-        var skyColInt = _c.parseHex(SKY_COL);
-        var grndColInt = _c.parseHex(GROUND_COL);
-        var blend0 = _c.parseHex(_c.mixHexCols(SKY_COL, GROUND_COL, 0.9, 0.1));
-        var blend1 = _c.parseHex(_c.mixHexCols(SKY_COL, GROUND_COL, 0.7, 0.3));
-        var blend2 = _c.parseHex(_c.mixHexCols(SKY_COL, GROUND_COL, 0.5, 0.5));
-        var blend3 = _c.parseHex(_c.mixHexCols(SKY_COL, GROUND_COL, 0.3, 0.7));
+        var skyColInt = colorHelper.parseHex(SKY_COL);
+        var grndColInt = colorHelper.parseHex(GROUND_COL);
+        var blend0 = colorHelper.parseHex(colorHelper.mixHexCols(SKY_COL, GROUND_COL, 0.9, 0.1));
+        var blend1 = colorHelper.parseHex(colorHelper.mixHexCols(SKY_COL, GROUND_COL, 0.7, 0.3));
+        var blend2 = colorHelper.parseHex(colorHelper.mixHexCols(SKY_COL, GROUND_COL, 0.5, 0.5));
+        var blend3 = colorHelper.parseHex(colorHelper.mixHexCols(SKY_COL, GROUND_COL, 0.3, 0.7));
 
         
 
@@ -337,12 +337,12 @@ function ForestGenerator(forestOptions, treeOptions) {
             // stripes
             // big fat ones: i%65000
             if(_rainbow && i%_r.random(9999)==0){
-                skyColInt = _c.parseHex(_c.randomHex());
-                grndColInt = _c.parseHex(_c.randomHex());
-                blend0 = _c.parseHex(_c.randomHex());
-                blend1 = _c.parseHex(_c.randomHex());
-                blend2 = _c.parseHex(_c.randomHex());
-                blend3 = _c.parseHex(_c.randomHex());
+                skyColInt = colorHelper.parseHex(colorHelper.randomHex());
+                grndColInt = colorHelper.parseHex(colorHelper.randomHex());
+                blend0 = colorHelper.parseHex(colorHelper.randomHex());
+                blend1 = colorHelper.parseHex(colorHelper.randomHex());
+                blend2 = colorHelper.parseHex(colorHelper.randomHex());
+                blend3 = colorHelper.parseHex(colorHelper.randomHex());
             }
 
             // buffer.length/skyline = the line on the image where the ground begins.
@@ -373,8 +373,8 @@ function ForestGenerator(forestOptions, treeOptions) {
                 var prevPixel = palette[outputBuffer[(i-8)/4]];
                 //console.log(lastPixel+", "+prevPixel);
                 if(i%effectSpacing <2 && lastPixel != prevPixel){
-                   //color = _c.hexToInt(_c.addHexCols(lastPixel,prevPixel));
-                   color = _c.hexToInt(_c.randomHex());
+                   //color = colorHelper.hexToInt(colorHelper.addHexCols(lastPixel,prevPixel));
+                   color = colorHelper.hexToInt(colorHelper.randomHex());
                 }
             }
 
@@ -467,7 +467,7 @@ function ForestGenerator(forestOptions, treeOptions) {
         var geometry = new THREE.CircleGeometry(radius, 8);
 
         var material = new THREE.MeshLambertMaterial( { 
-            color: _rainbow ? _c.parseHex(_c.randomHex()) : _c.parseHex(col),
+            color: _rainbow ? colorHelper.parseHex(colorHelper.randomHex()) : colorHelper.parseHex(col),
             transparent: true 
         });
         material.opacity = opacity;
@@ -477,7 +477,7 @@ function ForestGenerator(forestOptions, treeOptions) {
 
     function _hemisphereMesh(col, radius){
         var sphGeom = new THREE.SphereGeometry(radius, 5, 4, 0, Math.PI*2, 0, Math.PI/2);    
-        var hex = _rainbow ? _c.parseHex(_c.randomHex()) : _c.parseHex(col);
+        var hex = _rainbow ? colorHelper.parseHex(colorHelper.randomHex()) : colorHelper.parseHex(col);
 
         for (i = 0; i < sphGeom.faces.length; i ++) {
             sphGeom.faces[i].color.setHex(hex);
@@ -509,10 +509,10 @@ function ForestGenerator(forestOptions, treeOptions) {
 
     function _bushColors(){
         var cols = [];
-        var bushBase = _c.mixHexCols(_c.randomHex(),_decid.options.COLOR_BTM,0.3,0.7);
-        bushBase = _c.mixHexCols(bushBase,GROUND_COL,0.4,0.6);
+        var bushBase = colorHelper.mixHexCols(colorHelper.randomHex(),_decid.options.COLOR_BTM,0.3,0.7);
+        bushBase = colorHelper.mixHexCols(bushBase,GROUND_COL,0.4,0.6);
         for (i = 0; i < 4; i++){
-            cols.push(_c.variationsOn(bushBase, 20));
+            cols.push(colorHelper.variationsOn(bushBase, 20));
         }
         return cols;
     }
@@ -540,8 +540,8 @@ function ForestGenerator(forestOptions, treeOptions) {
 
     function _buildRocks(){
         var numRocks = _r.randomInt(NUM_TREES*2,NUM_TREES*4);
-        var baseGrey = _c.greyHex(NIGHT_MODE ? _r.randomInt(10,50) : _r.randomInt(30,100));
-        var rockCol = _c.mixHexCols(GROUND_COL,baseGrey,0.6,0.4);
+        var baseGrey = colorHelper.greyHex(NIGHT_MODE ? _r.randomInt(10,50) : _r.randomInt(30,100));
+        var rockCol = colorHelper.mixHexCols(GROUND_COL,baseGrey,0.6,0.4);
         
         console.log("[) "+numRocks);
         for(var i=0; i<numRocks; i++){
@@ -562,7 +562,7 @@ function ForestGenerator(forestOptions, treeOptions) {
     function _buildBushes(){
         var bushHeight = _r.random(0.4,1);
         var bushWidth = _r.randomInt(4,12);
-        var numBushes = _r.randomInt(50,200);
+        var numBushes = _r.randomInt(0,NUM_TREES);
         var bushColors = _bushColors();
         var leafSize = _r.random(_decid.options.LEAF_SIZE,_decid.options.LEAF_SIZE);
         var leafWidth = _r.random(0.7,1);
@@ -570,7 +570,7 @@ function ForestGenerator(forestOptions, treeOptions) {
 
         var backBushCols = [];
         for(var i=0; i<bushColors.length; i++){
-            backBushCols.push(_c.brightenByAmt(bushColors[i],_r.random(-10,10)));
+            backBushCols.push(colorHelper.brightenByAmt(bushColors[i],_r.random(-10,10)));
         }
 
         console.log("{}{} "+numBushes);
@@ -581,21 +581,14 @@ function ForestGenerator(forestOptions, treeOptions) {
             var newBush = _bush(_r.random(bushHeight*0.5,bushHeight*1.2),bushWidth,bushColors,leafSize, leafWidth);
             newBush.position.z = _r.random(-30, 200);
             newBush.position.x = _r.randomSign(_r.random(4,40 + i));
-            newBush.position.y = 1;
             _forest.add(newBush);
             
-        }
-        
-        // temp I think
-        if(_treeOptions.RAINBOW){
-            return;
         }
         // Add a big ridge at the back of the scene
         for (i = 0; i < NUM_TREES*0.6; i++) {
             var newBush = _bush(_r.random(bushHeight*50,bushHeight*80),bushWidth*8,backBushCols,leafSize*4, leafWidth);
             newBush.position.z = _r.random(_RIDGE_Z1, _RIDGE_Z2);
             newBush.position.x = _r.randomSign(_r.random(0,300));
-            newBush.position.y = 1;
             _forest.add(newBush);
             
         }
@@ -603,12 +596,12 @@ function ForestGenerator(forestOptions, treeOptions) {
 
     function _flowerColors(){
         var cols = [];
-        var flowerBase = _c.randomHex();
+        var flowerBase = colorHelper.randomHex();
         if(NIGHT_MODE){
-            flowerBase = _c.brightenByAmt(flowerBase, -100);
+            flowerBase = colorHelper.brightenByAmt(flowerBase, -100);
         }
         for (var i = 0; i < 4; i++){
-            cols.push(_c.variationsOn(flowerBase, 50));
+            cols.push(colorHelper.variationsOn(flowerBase, 50));
         }
         return cols;
     }
@@ -744,7 +737,7 @@ function ForestGenerator(forestOptions, treeOptions) {
 
             var clumpCenterX = _r.randomInt(-250,250);
             var clumpCenterY = _r.random(160,700);
-            var cloudCol = _c.brightenByAmt(SKY_COL, _r.randomInt(30));
+            var cloudCol = colorHelper.brightenByAmt(SKY_COL, _r.randomInt(30));
 
             console.log("clump "+i+": "+cloudsPerClump+" clouds around "+clumpCenterX+", "+clumpCenterY);
 
@@ -755,7 +748,7 @@ function ForestGenerator(forestOptions, treeOptions) {
                 cloud.scale.y = _r.random(thinness);
                 cloud.scale.x = _r.random(0.3, 0.7);
                 // darker clouds in the background please
-                cloud.position.z = 700 + (255 - _c.valueOfHexCol(cloudCol));
+                cloud.position.z = 700 + (255 - colorHelper.valueOfHexCol(cloudCol));
                 var y_adj = cloudMaxRad*thinness*1.5;
                 cloud.position.y = clumpCenterY + _r.random(-y_adj/2, y_adj/2);
                 cloud.position.x = clumpCenterX + _r.random(-cloudMaxRad/4,cloudMaxRad/4);
@@ -777,28 +770,19 @@ function ForestGenerator(forestOptions, treeOptions) {
         var i;
         var numTrees = _r.randomInt(NUM_TREES*0.5, NUM_TREES*1.5);
         var groundLeafSize = _pickLeafSize();
-        var farEdge = _r.random(300,600);
+        var farEdge = _r.random(400,500);
         var zInterval = farEdge/NUM_TREES;
-        var xInterval = _r.random(120,200)/NUM_TREES;
+        var xInterval = _r.random(150,250)/NUM_TREES;
 
-        //Ground Plane
-        var planeGeom = new THREE.SphereGeometry( 600, 32, 32 );
-        var planeMat = new THREE.MeshBasicMaterial( {color: _c.parseHex(GROUND_COL)} );
-        var planeSphere = new THREE.Mesh( planeGeom, planeMat );
-        planeSphere.position.y = -1;
-        planeSphere.position.z = 500;
-        planeSphere.scale.y = 0.001;
-        _forest.add( planeSphere );
-        /*
-        var planeGeom = new THREE.BoxGeometry( 100, 1, 200, 1, 1, 1 );
-        var planeMat = new THREE.MeshBasicMaterial( {color: _c.parseHex(GROUND_COL)} );
-
+        //Ground
+        var planeGeom = new THREE.BoxGeometry( 50, 10, 700, 4, 4, 4);
+        //var planeMat = new THREE.MeshBasicMaterial( {color: colorHelper.parseHex(GROUND_COL)} );
+        var planeMat = new THREE.MeshBasicMaterial( {color: colorHelper.parseHex("#7fff00")} );
         var planeBox = new THREE.Mesh( planeGeom, planeMat );
         //plane.rotation.x = Math.PI/4;
         planeBox.position.y = 5;
         planeBox.position.z = 5;
         _forest.add( planeBox );
-        */
 
         var xPositions = [];
         for (i = 0; i < NUM_TREES*2; i++) {
@@ -821,7 +805,6 @@ function ForestGenerator(forestOptions, treeOptions) {
                 newTree = treetype.getTree(treetype.options);
                  wrappedTree = new THREE.Object3D();
                  wrappedTree.add(newTree);
-                 wrappedTree.rotation.y = _r.random(Math.PI*2);
             } else {
                 wrappedTree = _trees[i-NUM_TREES].clone(true);
             }
@@ -829,7 +812,7 @@ function ForestGenerator(forestOptions, treeOptions) {
             // If a tree falls in the forest;
             
             var atreefalls = Math.random();
-            if(atreefalls < 0.01){
+            if(atreefalls < 0.05){
                 wrappedTree.rotation.x = Math.PI/2;
             } else if (atreefalls < 0.1){
                 wrappedTree.rotation.z = Math.PI/2;
@@ -849,7 +832,7 @@ function ForestGenerator(forestOptions, treeOptions) {
             } else {
                 //add the last trees to the bush ridge at the back of the scene
                 // don't bother with the ground leaves, we can't see well that far back.
-                wrappedTree.position.z = _r.random(_RIDGE_Z1*0.6, _RIDGE_Z1);
+                wrappedTree.position.z = _r.random(_RIDGE_Z1*0.8, _RIDGE_Z2);
 
                 // let's test grouping these all closer.
                 wrappedTree.position.x =  _r.randomSign(xPositions[i] + (i < 20 ? _r.random(2,3) : 0));          
@@ -872,138 +855,6 @@ function ForestGenerator(forestOptions, treeOptions) {
         }
 
         
-    }
-
-    function _grassBlade(){
-
-        let grassHeight = _r.randomInt(10,14);
-        let grassWidth = 0.25;
-        let grassCol = _rainbow ? _c.randomHex() : _c.brightenByAmt(_r.randomFrom(GROUND_COLS),-10);
-        let bend = _r.random(0,0.1);
-        //(baseLength, distanceFromTip, distanceFromRoot, fullTreeDepth, minRad, maxRad)
-        var root = _grassSegment(0.01, grassHeight, 0, grassHeight, grassWidth, grassWidth, grassCol);
-        let workingRoot = root;
-        for (let i = 0; i < grassHeight; i++) {
-            
-            let segment = _grassSegment(_treeOptions.BRANCH_L/8, grassHeight-i, i, grassHeight, grassWidth*((grassHeight-(i+1))/grassHeight), grassWidth*((grassHeight -i)/grassHeight), grassCol);
-
-            segment.scale.x = 0.1;
-            segment.rotation.x = bend;
-            workingRoot.tip.add(segment);
-            workingRoot = segment;
-        }
-        root.rotation.x = _r.random(-Math.PI/5, Math.PI/5);
-        root.rotation.y = _r.random(0,Math.PI*2);
-
-        return root;
-    }
-
-        /**
-     * HASTILY STOLEN FROM BUILDBRANCH
-     * Make a cylindrical mesh and ball "joint" representing one branch segment of a tree.
-     * ---------------------------------------------------------------------------------------------------
-     * @param  {Number} baseLength          -- how long are branches at base? Will vary based on this.
-     * @param  {int} distanceFromTip        -- how many nodes away from the branch tip is this node?
-     * @param  {int} distanceFromRoot       -- how many nodes is this node away from the ground?
-     * @param  {int} fullTreeDepth          -- how many nodes has the longest path from root to tip?
-     * @param  {Number} minRad              -- minimum branch radius
-     * @param  {Number} maxRad              -- maximum branch radius
-     * 
-     * @return {THREE.Object3D}             -- a 3d object holding the branch segment
-     */
-    function _grassSegment(baseLength, distanceFromTip, distanceFromRoot, fullTreeDepth, minRad, maxRad, branchCol) {
-
-        var i;
-        var length = baseLength;// * _r.random(0.5, 0.7);
-
-        // It's possible for certain sets of parameters to make branches longer than our max, so, rein it in!
-        var referenceLength = Math.min(length, _treeOptions.BRANCH_L);
-
-        var baseRadius = function(distFromTip, distFromRoot) {
-            return minRad + ((distFromTip) / fullTreeDepth) * (maxRad - minRad);
-        };
-
-        if(distanceFromRoot <= 1){
-            length *= 2;
-        }
-
-        var radiusBottom = baseRadius(distanceFromTip, distanceFromRoot);
-        var radiusTop = baseRadius(Math.max(0, distanceFromTip - 1), distanceFromRoot + 1);
-
-        var cylGeom = new THREE.CylinderGeometry(radiusTop, radiusBottom, length, 4);
-        var sphGeom = new THREE.SphereGeometry(radiusTop, 2, 2);
-        var hex;
-
-        var propBtm = (fullTreeDepth - distanceFromRoot) / fullTreeDepth;
-        var propTop = 1 - propBtm;
-
-        
-        //var branchCol = _rainbow ? _c.randomHex() : _c.mixHexCols(_r.randomFrom(GROUND_COLS), _r.randomFrom(GROUND_COLS), propBtm, propTop);
-
-
-        for (i = 0; i < cylGeom.faces.length; i ++) {
-            hex = _rainbow ? _c.parseHex(_c.randomHex()) : _c.parseHex(branchCol);
-            cylGeom.faces[i].color.setHex(hex);
-        }
-
-        for (i = 0; i < sphGeom.faces.length; i ++) {
-            hex = _rainbow ? _c.parseHex(_c.randomHex()) : _c.parseHex(branchCol);
-            sphGeom.faces[i].color.setHex(hex);
-        }
-
-        var material = new THREE.MeshBasicMaterial({
-            vertexColors: THREE.FaceColors,
-            overdraw: 0.5
-        });
-
-        var cylinder = new THREE.Mesh(cylGeom, material);
-        cylinder.position.y = length / 2;
-
-        //var sphere = new THREE.Mesh(sphGeom, material);
-
-        var tip = new THREE.Object3D();
-        tip.position.y = length;
-        //tip.add(sphere);
-
-        var branch = new THREE.Object3D();
-        branch.add(cylinder);
-        branch.add(tip);
-        branch.tip = tip;
-        branch.length = length;
-
-        //console.log("grass segment l "+length+", minrad "+minRad+" maxrad "+maxRad);
-        return branch;
-    }
-    
-
-    function _growGrass(){
-        var patchSize = _forestOptions.GRASS_DENSITY;
-        let clusterSize = _r.random(0,2);
-        let numInCluster = _r.random(4,10);
-        if(_forestOptions.GRASS_DENSITY==0){
-            return;
-        }
-        for(let i=0; i<_trees.length; i++){
-            console.log("grass "+i);
-
-            for(let j=0; j<patchSize; j+=numInCluster){
-                
-                let clumpPos = {
-                    x: _trees[i].position.x + _r.randomSign(_r.random(0,40)),
-                    y: _trees[i].position.y,
-                    z: _trees[i].position.z + _r.randomSign(_r.random(0,40))
-                }
-                for(let k=0; k<numInCluster; k++){
-                    let blade = _grassBlade();
-                    blade.position.x = clumpPos.x + _r.randomSign(_r.random(0,clusterSize));
-                    blade.position.y = clumpPos.y + _r.randomSign(_r.random(0,clusterSize));
-                    blade.position.z = clumpPos.z + _r.randomSign(_r.random(0,clusterSize));
-                    _forest.add(blade);
-                }
-                
-                numInCluster = _r.randomInt(4,10);
-            }
-        }
     }
 
     /**
@@ -1039,7 +890,7 @@ function ForestGenerator(forestOptions, treeOptions) {
     }
 
     function _buildStar() {
-        var starCol = _c.mixHexCols("#FFFFFF", SKY_COL, 0.7, 0.3);
+        var starCol = colorHelper.mixHexCols("#FFFFFF", SKY_COL, 0.7, 0.3);
         var star = _circleMesh(starCol, _r.random(1, 3));
         star.rotation.x = -Math.PI;
         return star;
@@ -1078,14 +929,12 @@ function ForestGenerator(forestOptions, treeOptions) {
 
         _forest = new THREE.Object3D();
         _forest.position.y = -10;
-        _forest.position.z = -_r.random(20,40);
 
         _buildForest();
         _buildHills();
         _buildClouds();
         _buildBushes();
         _buildRocks();
-        _growGrass();
         _forest.add(_flowers());    
         if(PATH_MODE){
             _forest.add(_dirtPath());    
