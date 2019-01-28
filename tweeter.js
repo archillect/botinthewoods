@@ -142,4 +142,4 @@ process.argv.forEach((val, index) => {
   }
 });
 
-_tweetEveryThisManyMinutes(250);
+_tweetEveryThisManyMinutes(230);
