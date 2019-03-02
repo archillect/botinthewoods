@@ -88,6 +88,9 @@ function DeciduousTrees(options) {
 
         if (depth < _options.MAX_DEPTH) {
             var branchChance = (_options.BRANCH_P - Math.min(_options.BRANCH_P*0.8, _options.CHANCE_DECAY * depth));
+            if(depth >= _options.MAX_DEPTH - 1){
+                branchChance = 0.8;
+            }
 
             while (_numBranches==0 || (structure.length < _options.MAX_BRANCHES_PER_NODE && _numBranches<_options.MAX_BRANCHES_TOTAL && Math.random() < branchChance)) {
 

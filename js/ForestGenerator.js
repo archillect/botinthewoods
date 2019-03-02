@@ -58,10 +58,12 @@ function ForestGenerator(forestOptions, treeOptions) {
     var _RIDGE_Z1 = 800;
     var _RIDGE_Z2 = 900;
 
-    _initColors();
+    
 
     var _decid = new DeciduousTrees(_treeOptions);
     var _conif = new ConiferousTrees(_treeOptions);
+
+    _initColors();
     //var _moon = new Moon();
 
     var _noise = perlin.generatePerlinNoise(1000, 1000);
@@ -139,10 +141,13 @@ function ForestGenerator(forestOptions, treeOptions) {
     function _initColors() {
 
         var i;
+        //(_decid.options.RAINBOW? _c.variationsOn("#222222", 10) : _c.variationsOn("#4d6876", 120))
 
         // The sky and ground are a pastel blue and a muddy green, randomly permuted
+
         SKY_COL = NIGHT_MODE ? _c.variationsOn("#4d6876", 120) : _c.variationsOn("#bdeff1", 150);
-        GROUND_COL = NIGHT_MODE ? _c.variationsOn("#40523c", 80) : _c.brightenByAmt(_c.variationsOn("#78836e", 150),_r.randomInt(-25,-75));
+
+        GROUND_COL = NIGHT_MODE ? (_decid.options.RAINBOW? _c.variationsOn("#222222", 20) : _c.variationsOn("#40523c", 80)) : _c.brightenByAmt(_c.variationsOn("#78836e", 150),_r.randomInt(-25,-75));
         
         // There are leaves on the ground too.  They match the ground, which varies slightly.
         // And flowers!  Which could be any colour.
@@ -775,10 +780,9 @@ function ForestGenerator(forestOptions, treeOptions) {
     
     function _buildForest() {
         var i;
-        var numTrees = _r.randomInt(NUM_TREES*0.5, NUM_TREES*1.5);
         var groundLeafSize = _pickLeafSize();
-        var farEdge = _r.random(300,600);
-        var zInterval = farEdge/NUM_TREES;
+        var farEdge = _r.random(500,800)*(NUM_TREES > 100 ? 0.4 : NUM_TREES > 50 ? 0.6 : 0.4);
+        var zInterval = (farEdge/NUM_TREES);
         var xInterval = _r.random(120,200)/NUM_TREES;
 
         //Ground Plane
@@ -836,7 +840,7 @@ function ForestGenerator(forestOptions, treeOptions) {
             }
             wrappedTree.rotation.y = Math.random()*Math.PI*2;
 
-            wrappedTree.position.x = _r.randomSign(xPositions[i] + (i < 20 ? _r.random(2,3) : 0));          
+            wrappedTree.position.x = _r.randomSign(xPositions[i] + (i < NUM_TREES/3 ? _r.random(2,3) : 0));          
 
             if(i < NUM_TREES){
                 // scatter these throughout the field
@@ -849,10 +853,10 @@ function ForestGenerator(forestOptions, treeOptions) {
             } else {
                 //add the last trees to the bush ridge at the back of the scene
                 // don't bother with the ground leaves, we can't see well that far back.
-                wrappedTree.position.z = _r.random(_RIDGE_Z1*0.6, _RIDGE_Z1);
+                wrappedTree.position.z = _r.random(farEdge, _RIDGE_Z1);
 
                 // let's test grouping these all closer.
-                wrappedTree.position.x =  _r.randomSign(xPositions[i] + (i < 20 ? _r.random(2,3) : 0));          
+                wrappedTree.position.x =  _r.randomSign(xPositions[i]);        
 
             }
 
@@ -1078,7 +1082,7 @@ function ForestGenerator(forestOptions, treeOptions) {
 
         _forest = new THREE.Object3D();
         _forest.position.y = -10;
-        _forest.position.z = -_r.random(20,40);
+        _forest.position.z = -_r.random(0,20);
 
         _buildForest();
         _buildHills();
